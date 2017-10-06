@@ -5,3 +5,4 @@
 *.js linguist-language=Cordova
 *.css linguist-language=Cordova
 *.html linguist-language=Cordova
+*.java linguist-language=Cordova
