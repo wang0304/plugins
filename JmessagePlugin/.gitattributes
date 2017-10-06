@@ -1,0 +1,7 @@
+*.h linguist-language=Cordova
+*.m linguist-language=Cordova
+*.swift linguist-language=Cordova
+*.js linguist-language=Cordova
+*.css linguist-language=Cordova
+*.html linguist-language=Cordova
+*.java linguist-language=Cordova
