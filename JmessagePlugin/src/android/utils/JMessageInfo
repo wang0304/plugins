@@ -1,0 +1,24 @@
+
+1. 登录用户信息
+UserInfo{userID=16838802, userName='user01', nickname='', notename='', noteText='', star=0, blacklist=0, nodisturb=0, avatarMediaID='null', birthday='', signature='', gender='', region='', address='', appkey='812235598041b1bbe845b1f6'}
+
+
+2. 单个用户会话信息列表
+Conversation{type=single, targetId='user01', latestText='', latestType=text, lastMsgDate=1467799846243, unReadMsgCnt=0, msgTableName='msg595876016', targetAppkey='812235598041b1bbe845b1f6'}
+
+
+3. 群组会话信息列表
+Group{_id=1, groupID=10210091, groupOwnerID='16838802', groupName='', groupDescription='', groupLevel=3, groupFlag=1, maxMemberCount=0, groupMembers=[16838802, 16838806, 16838810, 16799705, 16799705]}
+
+
+4. 发送消息Message
+Message{_id=6, messageId=0, direct=send, status=created, content={"text":"发送测试消息","extras":{}}, version=1, fromName='null', contentType=text, contentTypesString='text', createTimeInMillis=1467971190383, targetType=group, targetID='10210091', targetName='user01 ,user02 ,user03 ,user04', fromType='user', fromID=null, notification=null}
+
+
+5. 会话列表
+[Conversation{, type=group, targetId='10210715', latestText='看到群消息了', latestType=text, lastMsgDate=1468300800909, unReadMsgCnt=0, msgTableName='msg1224873808', targetAppkey=''},
+  Conversation{, type=single, targetId='user01', latestText='', latestType=voice, lastMsgDate=1468300575664, unReadMsgCnt=0, msgTableName='msg1436804171', targetAppkey='59ee64370ec332c0643d6653'}]
+
+
+6. 会话消息列表
+[{"createTimeInMillis":1467971190383,"direct":"send","fromID":null,"contentTypesString":"text","targetID":"10210091","status":"send_fail","targetName":"","contentType":"text","version":1,"content":{"text":"发送测试消息","extras":{}},"_id":6,"notification":null,"fromName":"null","messageId":0,"targetType":"group","fromType":"user"},{"createTimeInMillis":1467971127915,"direct":"send","fromID":null,"contentTypesString":"text","targetID":"10210091","status":"send_fail","targetName":"","contentType":"text","version":1,"content":{"text":"发送测试消息","extras":{}},"_id":5,"notification":null,"fromName":"null","messageId":0,"targetType":"group","fromType":"user"}]

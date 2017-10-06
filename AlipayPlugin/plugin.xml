@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="cordova-plugin-alipayplugin" version="1.0.0"
+        xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>AlipayPlugin</name>
+
+    <description>Cordova AlipayPlugin</description>
+    <license>Apache 2.0</license>
+    <keywords>cordova,alipay,plugin</keywords>
+
+    <!-- 限定Cordova版本 -->
+    <engines>
+        <engine name="cordova" version=">=4.0.0"/>
+    </engines>
+
+    <js-module name="alipayPlugin" src="www/AlipayPlugin.js">
+        <clobbers target="navigator.alipayPlugin"/>
+    </js-module>
+<!--    <js-module name="ngAlipay" src="www/ng-alipay.js">-->
+<!--        <clobbers target="navigator.ngAlipay"/>-->
+<!--    </js-module>-->
+
+    <!-- browser -->
+    <!--<platform name="browser">-->
+        <!--<config-file target="config.xml" parent="/*">-->
+            <!--<feature name="AlipayPlugin">-->
+                <!--<param name="browser-package" value="com.atme.plugins.alipay.AlipayPlugin" />-->
+            <!--</feature>-->
+        <!--</config-file>-->
+
+        <!--<source-file src="src/android/AlipayPlugin.java" target-dir="src/com/atme/plugins/alipay"/>-->
+        <!--<source-file src="src/android/alipay/AliPayCenter.java" target-dir="src/com/atme/plugins/alipay"/>-->
+        <!--<source-file src="src/android/alipay/Base64.java" target-dir="src/com/atme/plugins/alipay"/>-->
+        <!--<source-file src="src/android/alipay/OnPayResultCallback.java" target-dir="src/com/atme/plugins/alipay"/>-->
+        <!--<source-file src="src/android/alipay/PayResult.java" target-dir="src/com/atme/plugins/alipay"/>-->
+        <!--<source-file src="src/android/alipay/SignUtils.java" target-dir="src/com/atme/plugins/alipay"/>-->
+
+        <!--&lt;!&ndash; jar包 &ndash;&gt;-->
+        <!--<source-file src="src/android/libs/alipaySdk-20160427.jar" target-dir="libs"/>-->
+    <!--</platform>-->
+
+    <!-- 配置Android平台 -->
+    <platform name="android">
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="AlipayPlugin">
+                <param name="android-package" value="com.atme.plugins.alipay.AlipayPlugin"/>
+            </feature>
+        </config-file>
+
+        <config-file parent="/*" target="AndroidManifest.xml"/>
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <!-- Required  一些系统要求的权限，如访问网络等-->
+            <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT"/>
+            <uses-permission android:name="android.permission.INTERNET"/>
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+            <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+            <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+            <uses-permission android:name="android.permission.WAKE_LOCK"/>
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+            <uses-permission android:name="android.permission.VIBRATE"/>
+            <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+            <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+            <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+            <uses-permission android:name="android.permission.CAMERA"/>
+            <uses-permission android:name="android.permission.VIBRATE"/>
+            <uses-permission android:name="android.hardware.camera"/>
+            <uses-permission android:name="android.hardware.camera.autofocus"/>
+        </config-file>
+
+        <asset src="www/AlipayPlugin.js" target="alipay-plugin/www/AlipayPlugin.js" />
+<!--        <asset src="www/ng-alipay.js" target="alipay-plugin/www/ng-alipay.js" />-->
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <activity
+                android:name="com.alipay.sdk.app.H5PayActivity"
+                android:configChanges="orientation|keyboardHidden|navigation"
+                android:exported="false"
+                android:screenOrientation="behind" >
+            </activity>
+            <activity
+                android:name="com.alipay.sdk.auth.AuthActivity"
+                android:configChanges="orientation|keyboardHidden|navigation"
+                android:exported="false"
+                android:screenOrientation="behind" >
+            </activity>
+        </config-file>
+
+        <source-file src="src/android/AlipayPlugin.java" target-dir="src/com/atme/plugins/alipay"/>
+        <source-file src="src/android/alipay/AliPayCenter.java" target-dir="src/com/atme/plugins/alipay"/>
+        <source-file src="src/android/alipay/Base64.java" target-dir="src/com/atme/plugins/alipay"/>
+        <source-file src="src/android/alipay/OnPayResultCallback.java" target-dir="src/com/atme/plugins/alipay"/>
+        <source-file src="src/android/alipay/PayResult.java" target-dir="src/com/atme/plugins/alipay"/>
+        <source-file src="src/android/alipay/SignUtils.java" target-dir="src/com/atme/plugins/alipay"/>
+
+        <!-- jar包 -->
+        <source-file src="src/android/libs/alipaySdk-20160427.jar" target-dir="libs"/>
+    </platform>
+
+
+    <!-- 配置iOS平台 -->
+    <platform name="ios">
+        <config-file parent="/*" target="config.xml">
+            <feature name="AlipayPlugin">
+                <param name="ios-package" value="AlipayPlugin"/>
+                <!--<param name="onload" value="true" />-->
+            </feature>
+        </config-file>
+
+        <!-- Config plist file -->
+        <config-file target="*-Info.plist" parent="CFBundleURLTypes">
+            <array>
+                <dict>
+                    <key>CFBundleTypeRole</key>
+                    <string>Editor</string>
+                    <key>CFBundleURLSchemes</key>
+                    <array>
+                        <string>atme112233445566778899</string>
+                    </array>
+                </dict>
+            </array>
+        </config-file>
+        
+        <header-file src="src/ios/AlipayPlugin.h"/>
+        <source-file src="src/ios/AlipayPlugin.m"/>
+        <header-file src="src/ios/AppDelegate+Alipay.h"/>
+        <source-file src="src/ios/AppDelegate+Alipay.m"/>
+
+        <source-file src="src/ios/libs/libcrypto.a" framework="true"/>
+        <source-file src="src/ios/libs/libssl.a" framework="true" />
+
+        <!-- Ali Resource -->
+        <resource-file src="src/ios/libs/AlipaySDK.bundle" />
+        <resource-file src="src/ios/libs/Alipay-Prefix.pch" />
+        <resource-file src="src/ios/icon/icon.png" />
+        <resource-file src="src/ios/icon/icon@2x.png" />
+
+        <!-- Ali frameworks -->
+        <framework src="src/ios/libs/AlipaySDK.framework" custom="true" />
+
+        <!-- Fundamental frameworks -->
+        <framework src="CFNetwork.framework" weak="true" />
+        <framework src="CoreMotion.framework" weak="true" />
+        <framework src="CoreFoundation.framework" weak="true" />
+        <!--<framework src="CoreTelephony.framework" weak="true" />-->
+        <!--<framework src="MobileCoreServices.framework" weak="true" />-->
+        <framework src="AssetsLibrary.framework" weak="true" />
+        <!--<framework src="ImageIO.framework" weak="true" />-->
+        <!--<framework src="CoreData.framework" weak="true" />-->
+        <framework src="SystemConfiguration.framework" weak="true" />
+        <!--<framework src="CoreGraphics.framework" weak="true" />-->
+        <!--<framework src="CoreLocation.framework" weak="true" />-->
+        <framework src="Foundation.framework" weak="true" />
+        <!--<framework src="UIKit.framework" weak="true" />-->
+        <framework src="Security.framework" weak="true" />
+        <!--<framework src="AdSupport.framework" weak="true" />-->
+        <framework src="libz.tbd" weak="true" />
+        <framework src="libz.dylib" weak="true" />
+        <framework src="libstdc++.6.0.9.dylib" weak="true" />
+        <framework src="libstdc++.dylib" weak="true" />
+
+    </platform>
+</plugin>

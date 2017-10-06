@@ -1,0 +1,582 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin
+  id="cordova-plugin-jmessage" version="1"
+  xmlns="http://apache.org/cordova/ns/plugins/1.0"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <name>JmessagePlugin</name>
+  <AUTHOR>BaiMei</AUTHOR>
+  <description>Cordova JmessagePlugin</description>
+  <license>Apache 2.0</license>
+  <keywords>cordova,jmessage,plugin</keywords>
+
+  <!-- 第三方AppKey配置 -->
+  <preference name="API_KEY"/>
+
+  <js-module name="jmessagePlugin" src="www/JmessagePlugin.js">
+    <clobbers target="cordova.plugins.jmessagePlugin" />
+  </js-module>
+
+  <platform name="android">
+    <config-file parent="/*" target="res/xml/config.xml">
+      <feature name="JmessagePlugin">
+        <param name="android-package" value="com.baimei.jmessage.JmessagePlugin" />
+      </feature>
+    </config-file>
+    <config-file parent="/*" target="AndroidManifest.xml" />
+
+    <!-- 权限 -->
+    <config-file target="AndroidManifest.xml" parent="/manifest">
+
+      <permission
+        android:name="$PACKAGE_NAME.permission.JPUSH_MESSAGE"
+        android:protectionLevel="signature"/>
+
+      <!-- Required  一些系统要求的权限，如访问网络等-->
+      <uses-permission android:name="$PACKAGE_NAME.permission.JPUSH_MESSAGE"/>
+      <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT"/>
+      <uses-permission android:name="android.permission.INTERNET"/>
+      <uses-permission android:name="android.permission.WAKE_LOCK"/>
+      <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+      <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+      <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+      <uses-permission android:name="android.permission.VIBRATE"/>
+      <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+      <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+      <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+      <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+      <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+
+      <!-- JMessage Demo required for record audio-->
+      <uses-permission android:name="android.permission.RECORD_AUDIO" />
+      <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+
+      <!-- Optional for location -->
+      <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+      <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+      <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+      <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
+      <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+
+    </config-file>
+
+
+    <!-- 配置文件 -->
+    <config-file target="AndroidManifest.xml" parent="/manifest/application">
+
+      <!-- Required Push SDK核心功能-->
+      <service
+        android:name="cn.jpush.android.service.PushService"
+        android:enabled="true"
+        android:exported="false"
+        android:process=":remote">
+        <intent-filter>
+          <action android:name="cn.jpush.android.intent.REGISTER" />
+          <action android:name="cn.jpush.android.intent.REPORT" />
+          <action android:name="cn.jpush.android.intent.PushService" />
+          <action android:name="cn.jpush.android.intent.PUSH_TIME" />
+        </intent-filter>
+      </service>
+
+      <!-- Required Push SDK核心功能-->
+      <receiver
+        android:name="cn.jpush.android.service.PushReceiver"
+        android:enabled="true"
+        android:exported="false">
+        <intent-filter android:priority="1000">
+          <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" />  <!--Required  显示通知栏 -->
+          <category android:name="$PACKAGE_NAME" />
+        </intent-filter>
+        <intent-filter>
+          <action android:name="android.intent.action.USER_PRESENT" />
+          <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+        </intent-filter>
+        <!-- Optional -->
+        <intent-filter>
+          <action android:name="android.intent.action.PACKAGE_ADDED" />
+          <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
+          <data android:scheme="package" />
+        </intent-filter>
+      </receiver>
+
+      <!-- Required Push SDK核心功能 -->
+      <activity
+        android:name="cn.jpush.android.ui.PushActivity"
+        android:configChanges="orientation|keyboardHidden"
+        android:theme="@android:style/Theme.Translucent.NoTitleBar"
+        android:exported="false">
+        <intent-filter>
+          <action android:name="cn.jpush.android.ui.PushActivity" />
+
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="$PACKAGE_NAME" />
+        </intent-filter>
+      </activity>
+      <!-- Required Push SDK核心功能 -->
+      <service
+        android:name="cn.jpush.android.service.DownloadService"
+        android:enabled="true"
+        android:exported="false" />
+      <!-- Required Push SDK核心功能 -->
+      <receiver android:name="cn.jpush.android.service.AlarmReceiver" android:exported="false"/>
+
+      <!--  </>值来自开发者平台取得的AppKey-->
+      <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
+      <meta-data android:name="JPUSH_APPKEY" android:value="$API_KEY"/>
+      <!--com.atme.shuixing   appkey: e962dbf93908f89a96664311-->
+      <!--com.baimei.jmessage   appkey: 812235598041b1bbe845b1f6-->
+
+      <!-- IM Required IM SDK核心功能-->
+      <receiver
+        android:name="cn.jpush.im.android.helpers.IMReceiver"
+        android:enabled="true"
+        android:exported="false">
+        <intent-filter android:priority="1000">
+          <action android:name="cn.jpush.im.android.action.IM_RESPONSE" />
+          <action android:name="cn.jpush.im.android.action.NOTIFICATION_CLICK_PROXY" />
+
+          <category android:name="$PACKAGE_NAME" />
+        </intent-filter>
+      </receiver>
+
+      <!-- option 可选项。用于同一设备中不同应用的JPush服务相互拉起的功能。 -->
+      <!-- 若不启用该功能可删除该组件，将不拉起其他应用也不能被其他应用拉起 -->
+      <service
+        android:name="cn.jpush.android.service.DaemonService"
+        android:enabled="true"
+        android:exported="true">
+        <intent-filter>
+          <action android:name="cn.jpush.android.intent.DaemonService" />
+          <category android:name="$PACKAGE_NAME" />
+        </intent-filter>
+
+      </service>
+
+      <activity android:name="cn.jmessage.android.uikit.chatting.BaseActivity"/>
+      <activity android:name="cn.jmessage.android.uikit.chatting.ChatActivity"
+          android:theme="@style/noTitle"
+          android:windowSoftInputMode="adjustResize"/>
+
+      <activity android:name="com.baimei.jmessage.ConvListMainActivity" android:theme="@style/noTitle"/>
+
+    </config-file>
+
+
+    <asset src="www/JmessagePlugin.js" target="asset/www/JmessagePlugin.js" />
+    <source-file src="src/android/JmessagePlugin.java" target-dir="src/com/baimei/jmessage" />
+
+
+    <source-file src="src/android/jmessage/ConvListMainActivity.java" target-dir="src/com/baimei/jmessage" />
+    <source-file src="src/android/jmessage/OnDataResultCallback.java" target-dir="src/com/baimei/jmessage" />
+
+    <!-- 公共Common -->
+    <source-file src="src/android/common/DicConstants.java" target-dir="src/com/baimei/jmessage/common" />
+    <source-file src="src/android/common/InterfaceFactory.java" target-dir="src/com/baimei/jmessage/common" />
+    <source-file src="src/android/common/JchatApplication.java" target-dir="src/com/baimei/jmessage/common" />
+    <source-file src="src/android/common/JsonKeys.java" target-dir="src/com/baimei/jmessage/common" />
+    <source-file src="src/android/common/JsonValueUtils.java" target-dir="src/com/baimei/jmessage/common" />
+    <source-file src="src/android/common/ResultObject.java" target-dir="src/com/baimei/jmessage/common" />
+
+    <!-- 控制器Controller -->
+    <source-file src="src/android/controller/ConversationDetailController.java" target-dir="src/com/baimei/jmessage/controller" />
+    <source-file src="src/android/controller/ConversationListController.java" target-dir="src/com/baimei/jmessage/controller" />
+    <source-file src="src/android/controller/MsgDataAdapter.java" target-dir="src/com/baimei/jmessage/controller" />
+    <source-file src="src/android/controller/GroupInfoController.java" target-dir="src/com/baimei/jmessage/controller" />
+
+    <!-- 广播接收器 -->
+    <source-file src="src/android/receiver/NotificationClickEventReceiver.java" target-dir="src/com/baimei/jmessage/receiver" />
+
+    <!-- 自定义工具类 -->
+    <source-file src="src/android/utils/JMessageJSONUtils.java" target-dir="src/com/baimei/jmessage/utils" />
+    <source-file src="src/android/utils/ResponseCode.java" target-dir="src/com/baimei/jmessage/utils" />
+    <source-file src="src/android/utils/SqLog.java" target-dir="src/com/baimei/jmessage/utils" />
+    <source-file src="src/android/utils/JchatStringUtils.java" target-dir="src/com/baimei/jmessage/utils" />
+
+    <!-- 自定义实体类 -->
+    <source-file src="src/android/model/ChatModel.java" target-dir="src/com/baimei/jmessage/model" />
+    <source-file src="src/android/model/Event.java" target-dir="src/com/baimei/jmessage/model" />
+    <source-file src="src/android/model/MyConversation.java" target-dir="src/com/baimei/jmessage/model" />
+    <source-file src="src/android/model/MyEventMessage.java" target-dir="src/com/baimei/jmessage/model" />
+    <source-file src="src/android/model/MyGroupInfo.java" target-dir="src/com/baimei/jmessage/model" />
+    <source-file src="src/android/model/MyImageMessage.java" target-dir="src/com/baimei/jmessage/model" />
+    <source-file src="src/android/model/MyMessage.java" target-dir="src/com/baimei/jmessage/model" />
+    <source-file src="src/android/model/MyMsgContent.java" target-dir="src/com/baimei/jmessage/model" />
+    <source-file src="src/android/model/MyTextMessage.java" target-dir="src/com/baimei/jmessage/model" />
+    <source-file src="src/android/model/MyUserInfo.java" target-dir="src/com/baimei/jmessage/model" />
+    <source-file src="src/android/model/MyVoiceMessage.java" target-dir="src/com/baimei/jmessage/model" />
+
+    <!-- JPush UIKIT -->
+    <source-file src="src/android/uikit/chatting/photoview/Compat.java" target-dir="src/cn/jmessage/android/uikit/chatting/photoview" />
+    <source-file src="src/android/uikit/chatting/photoview/IPhotoView.java" target-dir="src/cn/jmessage/android/uikit/chatting/photoview" />
+    <source-file src="src/android/uikit/chatting/photoview/PhotoView.java" target-dir="src/cn/jmessage/android/uikit/chatting/photoview" />
+    <source-file src="src/android/uikit/chatting/photoview/PhotoViewAttacher.java" target-dir="src/cn/jmessage/android/uikit/chatting/photoview" />
+    <source-file src="src/android/uikit/chatting/photoview/ScrollerProxy.java" target-dir="src/cn/jmessage/android/uikit/chatting/photoview" />
+    <source-file src="src/android/uikit/chatting/photoview/SDK16.java" target-dir="src/cn/jmessage/android/uikit/chatting/photoview" />
+    <source-file src="src/android/uikit/chatting/photoview/VersionedGestureDetector.java" target-dir="src/cn/jmessage/android/uikit/chatting/photoview" />
+
+    <source-file src="src/android/uikit/chatting/shader/BubbleShader.java" target-dir="src/cn/jmessage/android/uikit/chatting/shader" />
+    <source-file src="src/android/uikit/chatting/shader/ShaderHelper.java" target-dir="src/cn/jmessage/android/uikit/chatting/shader" />
+
+    <source-file src="src/android/uikit/chatting/utils/BitmapLoader.java" target-dir="src/cn/jmessage/android/uikit/chatting/utils" />
+    <source-file src="src/android/uikit/chatting/utils/DialogCreator.java" target-dir="src/cn/jmessage/android/uikit/chatting/utils" />
+    <source-file src="src/android/uikit/chatting/utils/Event.java" target-dir="src/cn/jmessage/android/uikit/chatting/utils" />
+    <source-file src="src/android/uikit/chatting/utils/FileHelper.java" target-dir="src/cn/jmessage/android/uikit/chatting/utils" />
+    <source-file src="src/android/uikit/chatting/utils/HandleResponseCode.java" target-dir="src/cn/jmessage/android/uikit/chatting/utils" />
+    <source-file src="src/android/uikit/chatting/utils/IdHelper.java" target-dir="src/cn/jmessage/android/uikit/chatting/utils" />
+    <source-file src="src/android/uikit/chatting/utils/SharePreferenceManager.java" target-dir="src/cn/jmessage/android/uikit/chatting/utils" />
+    <source-file src="src/android/uikit/chatting/utils/TimeFormat.java" target-dir="src/cn/jmessage/android/uikit/chatting/utils" />
+
+    <source-file src="src/android/uikit/chatting/BaseActivity.java" target-dir="src/cn/jmessage/android/uikit/chatting" />
+    <source-file src="src/android/uikit/chatting/BaseImageView.java" target-dir="src/cn/jmessage/android/uikit/chatting" />
+    <source-file src="src/android/uikit/chatting/BubbleImageView.java" target-dir="src/cn/jmessage/android/uikit/chatting" />
+    <source-file src="src/android/uikit/chatting/ChatActivity.java" target-dir="src/cn/jmessage/android/uikit/chatting" />
+    <source-file src="src/android/uikit/chatting/ChatView.java" target-dir="src/cn/jmessage/android/uikit/chatting" />
+    <source-file src="src/android/uikit/chatting/CircleImageView.java" target-dir="src/cn/jmessage/android/uikit/chatting" />
+    <source-file src="src/android/uikit/chatting/DropDownListView.java" target-dir="src/cn/jmessage/android/uikit/chatting" />
+    <source-file src="src/android/uikit/chatting/MsgListAdapter.java" target-dir="src/cn/jmessage/android/uikit/chatting" />
+    <source-file src="src/android/uikit/chatting/RecordVoiceButton.java" target-dir="src/cn/jmessage/android/uikit/chatting" />
+    <source-file src="src/android/uikit/chatting/ShaderImageView.java" target-dir="src/cn/jmessage/android/uikit/chatting" />
+
+    <source-file src="src/android/uikit/conversation/ConversationListAdapter.java" target-dir="src/cn/jmessage/android/uikit/conversation" />
+    <source-file src="src/android/uikit/conversation/ConversationListController.java" target-dir="src/cn/jmessage/android/uikit/conversation" />
+    <source-file src="src/android/uikit/conversation/ConversationListFragment.java" target-dir="src/cn/jmessage/android/uikit/conversation" />
+    <source-file src="src/android/uikit/conversation/ConversationListView.java" target-dir="src/cn/jmessage/android/uikit/conversation" />
+    <source-file src="src/android/uikit/conversation/JChatDemoApplication.java" target-dir="src/cn/jmessage/android/uikit/conversation" />
+    <source-file src="src/android/uikit/conversation/MenuItemController.java" target-dir="src/cn/jmessage/android/uikit/conversation" />
+    <source-file src="src/android/uikit/conversation/MenuItemView.java" target-dir="src/cn/jmessage/android/uikit/conversation" />
+    <source-file src="src/android/uikit/conversation/SortConvList.java" target-dir="src/cn/jmessage/android/uikit/conversation" />
+
+    <source-file src="src/android/uikit/utils/PhoneUtil.java" target-dir="src/cn/jmessage/android/uikit/utils" />
+    <source-file src="src/android/uikit/utils/StringUtil.java" target-dir="src/cn/jmessage/android/uikit/utils" />
+
+    <source-file src="src/android/uikit/BaseFragment.java" target-dir="src/cn/jmessage/android/uikit" />
+
+    <!-- jar包 -->
+    <source-file src="src/android/libs/android-support-v4.jar" target-dir="libs"/>
+    <source-file src="src/android/libs/jmessage-android-1.2.5.jar" target-dir="libs"/>
+    <source-file src="src/android/libs/eventbus.jar" target-dir="libs"/>
+    <source-file src="src/android/libs/nineoldandroids-2.4.0.jar" target-dir="libs"/>
+    <source-file src="src/android/libs/picasso-2.4.0.jar" target-dir="libs"/>
+    <source-file src="src/android/libs/pinyin4j-2.5.0.jar" target-dir="libs"/>
+    <source-file src="src/android/libs/fastjson-1.2.17.jar" target-dir="libs"/>
+    <source-file src="src/android/libs/androidannotations-3.2.jar" target-dir="libs"/>
+
+    <source-file src="src/android/libs/armeabi/libjpush211.so" target-dir="libs/armeabi"/>
+    <source-file src="src/android/libs/armeabi-v7a/libjpush211.so" target-dir="libs/armeabi-v7a"/>
+    <source-file src="src/android/libs/arm64-v8a/libjpush211.so" target-dir="libs/arm64-v8a"/>
+    <source-file src="src/android/libs/mips/libjpush211.so" target-dir="libs/mips"/>
+    <source-file src="src/android/libs/mips64/libjpush211.so" target-dir="libs/mips64"/>
+    <source-file src="src/android/libs/x86/libjpush211.so" target-dir="libs/x86"/>
+    <source-file src="src/android/libs/x86_64/libjpush211.so" target-dir="libs/x86_64"/>
+
+    <!-- 资源文件: 动画 -->
+    <source-file src="src/android/res/anim/jmui_rotate.xml" target-dir="res/anim"/>
+    <source-file src="src/android/res/anim/jmui_slide_in_from_left.xml" target-dir="res/anim"/>
+    <source-file src="src/android/res/anim/jmui_slide_in_from_right.xml" target-dir="res/anim"/>
+    <source-file src="src/android/res/anim/jmui_slide_out_to_left.xml" target-dir="res/anim"/>
+    <source-file src="src/android/res/anim/jmui_slide_out_to_right.xml" target-dir="res/anim"/>
+    <source-file src="src/android/res/anim/jmui_voice_receive.xml" target-dir="res/anim"/>
+    <source-file src="src/android/res/anim/jmui_voice_send.xml" target-dir="res/anim"/>
+
+    <!-- 资源文件: 图片 -->
+    <source-file src="src/android/res/drawable/jmui_back_btn_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_bottom_rounded_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_chat_input_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_default_input_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_dialog_bottom_btn_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_dialog_bottom_left_btn.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_dialog_bottom_right_btn.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_dialog_default_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_dialog_default_style.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_dialog_top_btn_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_list_item_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_loading.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_menu_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_msg_receive_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_msg_send_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_msg_title_bar_right_btn_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_red_circle.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_register_btn_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_round_background.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_send_picture_btn_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_text_cursor_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_toast_default_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_top_rounded_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/jmui_voice_bg.xml" target-dir="res/drawable"/>
+    <source-file src="src/android/res/drawable/richpush_btn_selector.xml" target-dir="res/drawable"/>
+
+    <source-file src="src/android/res/drawable-hdpi/ic_richpush_actionbar_back.png" target-dir="res/drawable-hdpi"/>
+    <source-file src="src/android/res/drawable-hdpi/ic_richpush_actionbar_divider.png" target-dir="res/drawable-hdpi"/>
+    <source-file src="src/android/res/drawable-hdpi/jmui_loading_1.png" target-dir="res/drawable-hdpi"/>
+    <source-file src="src/android/res/drawable-hdpi/jmui_loading_3.png" target-dir="res/drawable-hdpi"/>
+    <source-file src="src/android/res/drawable-hdpi/jmui_loading_5.png" target-dir="res/drawable-hdpi"/>
+    <source-file src="src/android/res/drawable-hdpi/jmui_loading_7.png" target-dir="res/drawable-hdpi"/>
+    <source-file src="src/android/res/drawable-hdpi/jmui_loading_9.png" target-dir="res/drawable-hdpi"/>
+    <source-file src="src/android/res/drawable-hdpi/jmui_loading_11.png" target-dir="res/drawable-hdpi"/>
+    <source-file src="src/android/res/drawable-hdpi/jmui_loading_13.png" target-dir="res/drawable-hdpi"/>
+
+    <source-file src="src/android/res/drawable-xhdpi/jmui_back_btn.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_business_card.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_cancel_record.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_chat_detail.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_disconnect_icon.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_drop_down_menu_bg.9.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_expression1.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_fetch_failed.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_group.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_head_icon.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_keyboard.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_location.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_mic_1.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_mic_2.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_mic_3.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_mic_4.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_mic_5.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_more_menu.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_msg_titlebar_right_btn.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_pick_picture.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_picture_not_found.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_receive_1.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_receive_2.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_receive_3.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_receive_msg.9.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_send_1.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_send_2.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_send_3.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_send_error.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_send_msg.9.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_sending_img.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_take_photo.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_video.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_voice.png" target-dir="res/drawable-xhdpi"/>
+    <source-file src="src/android/res/drawable-xhdpi/jmui_voice_unread.png" target-dir="res/drawable-xhdpi"/>
+
+    <!-- 资源文件: 布局 -->
+    <source-file src="src/android/res/layout/jpush_conv_list_main.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jpush_popwin_layout.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jpush_webview_layout.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_activity_chat.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_base_bar_without_title.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_base_title_bar.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_chat_item_group_change.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_chat_item_receive_image.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_chat_item_receive_text.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_chat_item_receive_voice.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_chat_item_send_image.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_chat_item_send_text.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_chat_item_send_voice.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_conv_list_head_view.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_conversation_list_item.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_default_toast.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_dialog_add_friend_to_conv_list.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_dialog_base.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_dialog_base_with_button.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_dialog_delete_conv.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_dialog_msg_alert.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_dialog_record_voice.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_drop_down_list_header.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_drop_down_menu.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_fragment_conv_list.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_loading_view.xml" target-dir="res/layout"/>
+    <source-file src="src/android/res/layout/jmui_menu_title_bar.xml" target-dir="res/layout"/>
+
+    <!-- 资源文件:  -->
+    <source-file src="src/android/res/values/jpush_style.xml" target-dir="res/values"/>
+    <source-file src="src/android/res/values/jmui_attrs.xml" target-dir="res/values"/>
+    <source-file src="src/android/res/values/jmui_colors.xml" target-dir="res/values"/>
+    <source-file src="src/android/res/values/jmui_dimens.xml" target-dir="res/values"/>
+    <source-file src="src/android/res/values/jmui_strings.xml" target-dir="res/values"/>
+    <source-file src="src/android/res/values/jmui_styles.xml" target-dir="res/values"/>
+
+  </platform>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <platform name="ios">
+    <config-file parent="/*" target="config.xml">
+      <feature name="JmessagePlugin">
+        <param name="ios-package" value="JmessagePlugin" />
+      </feature>
+    </config-file>
+
+
+    <!-- Config plist file -->
+    <!-- 配置支付所需AppKey -->
+    <!--<config-file target="*-Info.plist" parent="CFBundleURLTypes">-->
+      <!--<array>-->
+        <!--<dict>-->
+          <!--<key>CFBundleTypeRole</key>-->
+          <!--<string>Editor</string>-->
+          <!--<key>CFBundleURLSchemes</key>-->
+          <!--<array>-->
+            <!--<string>1122334455667788</string>-->
+          <!--</array>-->
+        <!--</dict>-->
+      <!--</array>-->
+    <!--</config-file>-->
+
+
+    <source-file src="src/ios/JmessagePlugin.h" />
+    <source-file src="src/ios/JmessagePlugin.m" />
+    <header-file src="src/ios/JMSGApiKey.h"/>
+    <source-file src="src/ios/JMSGApiKey.m"/>
+    <header-file src="src/ios/BaseJMessage.h"/>
+    <source-file src="src/ios/BaseJMessage.m"/>
+    <header-file src="src/ios/AppDelegate+JMessage.h"/>
+    <source-file src="src/ios/AppDelegate+JMessage.m"/>
+
+    <!-- CocoaLumberjack -->
+    <header-file src="src/ios/CocoaLumberjack/Classes/CocoaLumberjack.h"/>
+    <header-file src="src/ios/CocoaLumberjack/Classes/DDAbstractDatabaseLogger.h"/>
+    <source-file src="src/ios/CocoaLumberjack/Classes/DDAbstractDatabaseLogger.m"/>
+    <header-file src="src/ios/CocoaLumberjack/Classes/DDASLLogCapture.h"/>
+    <source-file src="src/ios/CocoaLumberjack/Classes/DDASLLogCapture.m"/>
+    <header-file src="src/ios/CocoaLumberjack/Classes/DDASLLogger.h"/>
+    <source-file src="src/ios/CocoaLumberjack/Classes/DDASLLogger.m"/>
+    <header-file src="src/ios/CocoaLumberjack/Classes/DDAssertMacros.h"/>
+    <header-file src="src/ios/CocoaLumberjack/Classes/DDFileLogger.h"/>
+    <source-file src="src/ios/CocoaLumberjack/Classes/DDFileLogger.m"/>
+    <header-file src="src/ios/CocoaLumberjack/Classes/DDLegacyMacros.h"/>
+    <header-file src="src/ios/CocoaLumberjack/Classes/DDLog+LOGV.h"/>
+    <header-file src="src/ios/CocoaLumberjack/Classes/DDLog.h"/>
+    <source-file src="src/ios/CocoaLumberjack/Classes/DDLog.m"/>
+    <header-file src="src/ios/CocoaLumberjack/Classes/DDLogMacros.h"/>
+    <header-file src="src/ios/CocoaLumberjack/Classes/DDTTYLogger.h"/>
+    <source-file src="src/ios/CocoaLumberjack/Classes/DDTTYLogger.m"/>
+
+    <header-file src="src/ios/CocoaLumberjack/Classes/Extensions/DDContextFilterLogFormatter.h"/>
+    <source-file src="src/ios/CocoaLumberjack/Classes/Extensions/DDContextFilterLogFormatter.m"/>
+    <header-file src="src/ios/CocoaLumberjack/Classes/Extensions/DDDispatchQueueLogFormatter.h"/>
+    <source-file src="src/ios/CocoaLumberjack/Classes/Extensions/DDDispatchQueueLogFormatter.m"/>
+    <header-file src="src/ios/CocoaLumberjack/Classes/Extensions/DDMultiFormatter.h"/>
+    <source-file src="src/ios/CocoaLumberjack/Classes/Extensions/DDMultiFormatter.m"/>
+
+    <source-file src="src/ios/CocoaLumberjack/Framework/Lumberjack/CocoaLumberjack.modulemap"/>
+
+
+
+    <!-- JPush IM -->
+    <header-file src="src/ios/jmessage/JChatConstants.h"/>
+    <header-file src="src/ios/jmessage/JCHATCustomFormatter.h"/>
+    <source-file src="src/ios/jmessage/JCHATCustomFormatter.m"/>
+
+    <!-- Category -->
+    <header-file src="src/ios/jmessage/Category/NSDate+Utilities.h"/>
+    <source-file src="src/ios/jmessage/Category/NSDate+Utilities.m"/>
+    <header-file src="src/ios/jmessage/Category/NSObject+TimeConvert.h"/>
+    <source-file src="src/ios/jmessage/Category/NSObject+TimeConvert.m"/>
+    <header-file src="src/ios/jmessage/Category/NSString+MessageInputView.h"/>
+    <source-file src="src/ios/jmessage/Category/NSString+MessageInputView.m"/>
+    <header-file src="src/ios/jmessage/Category/UIImage+ResizeMagick.h"/>
+    <source-file src="src/ios/jmessage/Category/UIImage+ResizeMagick.m"/>
+
+    <!-- chat -->
+    <header-file src="src/ios/jmessage/chat/JCHATCommon.h"/>
+    <header-file src="src/ios/jmessage/chat/JCHATConversationListViewController.h"/>
+    <source-file src="src/ios/jmessage/chat/JCHATConversationListViewController.m"/>
+    <header-file src="src/ios/jmessage/chat/JCHATConversationViewController.h"/>
+    <source-file src="src/ios/jmessage/chat/JCHATConversationViewController.m"/>
+    <header-file src="src/ios/jmessage/chat/JCHATDetailsInfoViewController.h"/>
+    <source-file src="src/ios/jmessage/chat/JCHATDetailsInfoViewController.m"/>
+    <header-file src="src/ios/jmessage/chat/JCHATFriendDetailViewController.h"/>
+    <source-file src="src/ios/jmessage/chat/JCHATFriendDetailViewController.m"/>
+    <header-file src="src/ios/jmessage/chat/JCHATGroupDetailViewController.h"/>
+    <source-file src="src/ios/jmessage/chat/JCHATGroupDetailViewController.m"/>
+    <header-file src="src/ios/jmessage/chat/JCHATGroupSettingCtl.h"/>
+    <source-file src="src/ios/jmessage/chat/JCHATGroupSettingCtl.m"/>
+    <header-file src="src/ios/jmessage/chat/JCHATSelectFriendsCtl.h"/>
+    <source-file src="src/ios/jmessage/chat/JCHATSelectFriendsCtl.m"/>
+    <header-file src="src/ios/jmessage/chat/Model/JCHATChatModel.h"/>
+    <source-file src="src/ios/jmessage/chat/Model/JCHATChatModel.m"/>
+
+    <!-- Common -->
+    <header-file src="src/ios/jmessage/Common/JCHATFileManager.h"/>
+    <source-file src="src/ios/jmessage/Common/JCHATFileManager.m"/>
+    <header-file src="src/ios/jmessage/Common/JCHATSendMsgController.h"/>
+    <source-file src="src/ios/jmessage/Common/JCHATSendMsgController.m"/>
+    <header-file src="src/ios/jmessage/Common/JCHATSendMsgManager.h"/>
+    <source-file src="src/ios/jmessage/Common/JCHATSendMsgManager.m"/>
+    <header-file src="src/ios/jmessage/Common/JCHATStringUtils.h"/>
+    <source-file src="src/ios/jmessage/Common/JCHATStringUtils.m"/>
+    <header-file src="src/ios/jmessage/Common/JCHATTimeOutManager.h"/>
+    <source-file src="src/ios/jmessage/Common/JCHATTimeOutManager.m"/>
+
+    <!-- MBProgressHUD -->
+    <header-file src="src/ios/jmessage/MBProgressHUD/MBProgressHUD+Add.h"/>
+    <source-file src="src/ios/jmessage/MBProgressHUD/MBProgressHUD+Add.m"/>
+    <header-file src="src/ios/jmessage/MBProgressHUD/MBProgressHUD.h"/>
+    <source-file src="src/ios/jmessage/MBProgressHUD/MBProgressHUD.m"/>
+
+    <resource-file src="src/ios/jmessage/MBProgressHUD/MBProgressHUD.bundle" />
+
+    <!-- utils -->
+    <header-file src="src/ios/utils/JMessageConstants.h"/>
+    <header-file src="src/ios/utils/JMessageJSONUtils.h"/>
+    <source-file src="src/ios/utils/JMessageJSONUtils.m"/>
+    <header-file src="src/ios/utils/PrintObjectUtils.h"/>
+    <source-file src="src/ios/utils/PrintObjectUtils.m"/>
+    <header-file src="src/ios/utils/LogUtils.h"/>
+    <source-file src="src/ios/utils/LogUtils.m"/>
+
+
+    <!-- 资源配置文件 -->
+    <!--<resource-file src="src/ios/icon/icon@2x.png" />-->
+    <resource-file src="src/ios/libs/JMessage-Prefix.pch" />
+    <resource-file src="src/ios/config/JMessageConfig.plist" />
+
+
+
+    <!-- JPush frameworks -->
+    <!--<source-file src="src/ios/libs/libPods-JChat.a" framework="true" />-->
+    <framework src="src/ios/libs/JMessage.framework" custom="true" />
+
+
+
+    <!-- Fundamental frameworks -->
+    <framework src="CFNetwork.framework" weak="true" />
+    <framework src="CoreMotion.framework" weak="true" />
+    <framework src="CoreFoundation.framework" weak="true" />
+    <framework src="CoreTelephony.framework" weak="true" />
+    <framework src="MobileCoreServices.framework" weak="true" />
+    <framework src="AssetsLibrary.framework" weak="true" />
+    <!--<framework src="ImageIO.framework" weak="true" />-->
+    <framework src="AudioToolbox.framework" weak="true" />
+    <framework src="Accelerate.framework" weak="true" />
+    <framework src="AVFoundation.framework" weak="true" />
+    <framework src="CoreData.framework" weak="true" />
+    <framework src="CoreGraphics.framework" weak="true" />
+    <framework src="CoreLocation.framework" weak="true" />
+    <framework src="Foundation.framework" weak="true" />
+    <framework src="JavaScriptCore.framework" weak="true" />
+    <framework src="MessageUI.framework" weak="true" />
+    <framework src="NotificationCenter.framework" weak="true" />
+    <framework src="Photos.framework" weak="true" />
+    <framework src="Security.framework" weak="true" />
+    <framework src="SystemConfiguration.framework" weak="true" />
+    <framework src="UIKit.framework" weak="true" />
+    <!--<framework src="AdSupport.framework" weak="true" />-->
+    <framework src="libz.tbd" weak="true" />
+    <!--<framework src="libz.dylib" weak="true" />-->
+    <!--<framework src="libstdc++.6.0.9.dylib" weak="true" />-->
+    <!--<framework src="libstdc++.dylib" weak="true" />-->
+    <framework src="libsqlite3.0.tbd" weak="true" />
+
+    <!-- 配置JMessage AppKey -->
+    <config-file target="*JMessageConfig.plist" parent="APP_KEY">
+      <string>$API_KEY</string>
+    </config-file>
+
+  </platform>
+</plugin>
